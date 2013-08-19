@@ -1,0 +1,4 @@
+bashprompt
+==========
+
+bashprompt
