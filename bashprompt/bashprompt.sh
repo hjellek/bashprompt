@@ -215,11 +215,10 @@ function promptcmd () {
 
     GIT_BRANCH=`git branch 2>/dev/null|grep '^*'|colrm 1 2|tr -d ' '`
     if [ -n "${GIT_BRANCH}" ]; then
-        PS1="${PS1} \[${GIT_BRANCH_COLOR}\]${GIT_BRANCH}\[${COLOR_GREEN}\] \$\[${COLOR_DEFAULT}\] "
-    else
-        PS1="${PS1} \$\[${COLOR_DEFAULT}\] "
+        PS1="${PS1} \[${GIT_BRANCH_COLOR}\]${GIT_BRANCH}"
     fi
-}     
+        PS1="${PS1}\[${COLOR_GREEN}\] \$\[${COLOR_DEFAULT}\] "
+}
 
 # Trim working dir to 1/4 the screen width
 function prompt_workingdir () {
