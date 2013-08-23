@@ -118,12 +118,6 @@ class GitRecursiveStatus
                             $files[$repoGroup][$fileState] = array();
                         }
                         $files[$repoGroup][$fileState][] = $file;
-
-//                        = array(
-//                        self::FILE_STATE_STAGED => $staged,
-//                        self::FILE_STATE_NOT_STAGED => $notStaged,
-//                        self::FILE_STATE_UNTRACKED => $untracked
-//                    );
                     }
                 }
             }
@@ -145,17 +139,7 @@ class GitRecursiveStatus
         $this->printNotStagedFiles();
         $this->printUntrackedFiles();
 
-        $this->lintPHPFiles();
-    }
-
-    private function getFileCount($dataSet)
-    {
-        $count = 0;
-        foreach($dataSet as $set)
-        {
-            $count += count($set);
-        }
-        return $count;
+        $this->checkFiles();
     }
 
     private function printStagedFiles()
@@ -247,9 +231,9 @@ class GitRecursiveStatus
         return $data;
     }
 
-    private function lintPHPFiles()
+    private function checkFiles()
     {
-        $badPHPFiles = array();
+        $badFiles = array();
 
         foreach($this->reposWithFiles as $repoGroups)
         {
@@ -259,28 +243,48 @@ class GitRecursiveStatus
                 {
                     foreach($fileStates as $state => $files)
                     {
-                        foreach($files as $file)
-                        {
-                            if($this->hasPHPSyntaxError($file))
-                            {
-                                $badPHPFiles[] = $file;
-                            }
-                        }
+                        $badFiles += $this->validateFiles($files);
                     }
                 }
             }
         }
-        if(!empty($badPHPFiles))
+        if(!empty($badFiles))
         {
-            echo "\n\033[1;31mThe following PHP files does not pass linting:\n";
-            echo "\033[0;31m".implode("\n", $badPHPFiles)."\033[0m\n";
+            echo "\n\033[1;31mThe following files contains errors:\n";
+            foreach($badFiles as $file => $error)
+            {
+                echo "\033[0;31m".$file."\033[0m :: $error\n";
+            }
         }
     }
 
-    protected function hasPHPSyntaxError ($fileName)
+    protected function validateFiles($files)
     {
-        $lint = `php -l $fileName`;
-        return stripos($lint, "No syntax errors detected") === false;
+        $badFiles = array();
+        foreach($files as $file)
+        {
+            $validateError = $this->validate($file);
+            if($validateError)
+            {
+                $badFiles[$file] = $validateError;
+            }
+        }
+        return $badFiles;
+    }
+
+    protected function validate ($fileName)
+    {
+        $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
+        $error = null;
+        if($fileType == 'php')
+        {
+            $lint = `php -l $fileName`;
+            if(stripos($lint, "No syntax errors detected") === false)
+            {
+                $error = 'Does not pass linting';
+            }
+        }
+        return $error;
     }
 }
 
