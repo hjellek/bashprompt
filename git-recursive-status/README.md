@@ -1,8 +1,6 @@
 git-recursive-status
 ==========
 
-Originally written by [Dave Vehrs](http://www.debian-administration.org/article/Fancy_Bash_Prompts)
-
 Usage
 ----------
 In any directory containing git repos, call:
