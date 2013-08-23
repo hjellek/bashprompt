@@ -19,6 +19,8 @@ $modifiedFiles = array();
 $untrackedFiles = array();
 $stagedFiles = array();
 
+$badPHPFiles = array();
+
 foreach($statuses as $index => $status)
 {
     $matches = array();
@@ -39,6 +41,16 @@ foreach($statuses as $index => $status)
         preg_match_all('/^#\t([a-z0-9-_.\/]+)/ims', $content, $tmpMatches);
         if(isset($tmpMatches[1]))
         {
+            foreach($tmpMatches[1] as $file)
+            {
+                if(pathinfo($file, PATHINFO_EXTENSION) == 'php')
+                {
+                    if(!lint($file))
+                    {
+                        $badPHPFiles[] = $file;
+                    }
+                }
+            }
             $tmpUntrackedCount = count($tmpMatches[1]);
             if($tmpUntrackedCount)
             {
@@ -46,6 +58,12 @@ foreach($statuses as $index => $status)
             }
         }
     }
+}
+
+function lint ($fileName)
+{
+    $lint = `php -l $fileName`;
+    return stripos($lint, "No syntax errors detected");
 }
 
 if(!empty($modifiedFiles))
@@ -59,4 +77,10 @@ if(!empty($untrackedFiles))
     $untrackedCount = array_sum($untrackedFiles);
     $untrackedRepos = count($untrackedFiles);
     echo "$untrackedCount untracked files in $untrackedRepos repos\n";
+}
+
+if(!empty($badPHPFiles))
+{
+    echo "\n\033[1;31mThe following PHP files does not pass linting:\n";
+    echo "\033[0;31m".implode("\n", $badPHPFiles)."\033[0m\n";
 }
