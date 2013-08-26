@@ -38,7 +38,7 @@ class GitRecursiveStatus
         if(!$this->repos)
         {
             $repoPaths = array();
-            exec("find {$this->basePath} -type d -name .git | sed -e \"s/\.git//\"", $repoPaths);
+            exec("find {$this->basePath} -name .git | sed -e \"s/\.git//\"", $repoPaths);
 
             $repos = array();
             foreach($repoPaths as $repo)
