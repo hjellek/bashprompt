@@ -76,7 +76,7 @@ class GitRecursiveStatus
     private function readFileStatusForRepo(Repo $repo)
     {
         $content = preg_replace("/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/i", "", $repo->getStatus());
-        $parts = preg_split('/^#\s*$/ims', $content);
+        $parts = preg_split('/^(# On branch|#\s*$)/ims', $content);
 
         array_shift($parts);
 
