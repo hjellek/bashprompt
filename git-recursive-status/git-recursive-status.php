@@ -117,7 +117,7 @@ class GitRecursiveStatus
                         {
                             $files[$repoGroup][$fileState] = array();
                         }
-                        $files[$repoGroup][$fileState][] = $file;
+                        $files[$repoGroup][$fileState][] = realpath($this->basePath.'/'.$repo->path).'/'.$file;
                     }
                 }
             }
