@@ -55,11 +55,13 @@ class GitRecursiveStatus
         foreach ($this->getRepos() as $repo)
         {
             $status = $repo->getStatus();
-            if (false == strpos($status, 'nothing to commit')) {
-                if(!$repo->isRoot())
-                {
-                    echo "\033[1;33m{$repo->name}\033[0m  ({$repo->path})\n" . str_repeat('-', strlen($repo->name)) . "\n";
-                }
+            if($repo->isRoot())
+            {
+                echo "$status\n";
+            }
+            else if (false == strpos($status, 'nothing to commit'))
+            {
+                echo "\033[1;33m{$repo->name}\033[0m  ({$repo->path})\n" . str_repeat('-', strlen($repo->name)) . "\n";
                 echo "$status\n";
             }
         }
