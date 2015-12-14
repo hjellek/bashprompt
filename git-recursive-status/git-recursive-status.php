@@ -307,7 +307,8 @@ class Repo
     {
         if(!$this->status)
         {
-            $this->status = shell_exec("cd {$this->path} && script -q /dev/null git status | cat");
+            $command = "script -q /dev/null git --git-dir={$this->path}/.git --work-tree={$this->path} status";
+            $this->status = shell_exec($command);
         }
         return $this->status;
     }
